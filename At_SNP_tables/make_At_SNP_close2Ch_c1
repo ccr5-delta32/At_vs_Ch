@@ -1,0 +1,100 @@
+#!/usr/bin/python
+
+''' This will produce a re-organized variant table for all the accessions in the atclose2chlist.txt file.close
+    Rather then the one polymophic position per accession per line of the At_variants table the result of this 
+    script will be a table with one line per polymorphic site with the alleles for all accessions in columns.
+    These tables are stored in text files for further processinggingen. 
+    The nature of the variant tables is such that only sites variable between the reference and the accessions
+    in question are included. If some site is polymorphic for a certain accession but not for another then This
+    script assumes the 'another' accession has the reference allele at that position. There is some risk invol-
+    ved because it can also be that there is a deletion or simply no sequencing coverage for the accession in
+    question. Keep this in mind when interpreting perculiar results down the line.
+    Note that the script below will produce a table for a single chromosome that can be chosen where indicated. 
+    '''
+
+import MySQLdb
+import ext
+import re
+import sys
+
+listdir = "/biodata/dep_tsiantis/common/ath_accessions/"
+currdir = "/biodata/dep_tsiantis/common/Bjorn/At_1001_database/At_SNP_tables/"
+
+# get list of accessions close to Ch accessions excluding the 80 previously published
+with open(currdir + 'atclose2chlist.txt', 'r') as acc:
+  accessions = [[x.strip('\n') for x in y.split('\t')] for y in acc ]
+  strains = ['chromosome', 'position', 'Col-0'] + [x[1] for x in accessions ]
+  pstrain = ['chromosome', 'position', 'Col-0'] + [ re.sub(' ', '_', x[1]) for x in accessions ]
+
+db = MySQLdb.connect(host="mysql2.mpipz.mpg.de", user="pieper", passwd=ext.sentry, db="pieper_chpoly")
+cur = db.cursor()
+
+# Verify that each accession is present in the database
+# This takes a minute or so.
+not_in_db = []
+for strain in strains[3:len(strains)]:
+  cur.execute("select * from At_variants where allele='%s' limit 10" % (strain))
+  if len(cur.fetchall()) != 10:
+    not_in_db.append(strain)
+if len(not_in_db) > 0:
+  print 'Not every accession required for the analysis is in the db yet!!'
+  print 'The following are missing:'
+  print [x + '\n' for x in not_in_db] # this condition did not happen yet so not sure if this works
+  exit()
+else:
+  print 'All accessions have been found in the database'
+  
+stmt = "SELECT distinct(chromosome) from At_variants"
+cur.execute(stmt)
+chrom = [x[0] for x in list(cur.fetchall())]
+
+CHR = chrom[0] # This will do chromosome 1, change [0] to [1]...[6] to do chrs 2..5 and chrC and chrM respectively
+outfile = CHR + '_At_close2_Ch_SNP_raw'
+
+with open(outfile, 'wb') as out:
+  out.write('\t'.join(pstrain) + '\n')
+
+check = 0
+
+# initialize list of lists for the results
+result = [[] for x in range(len(strains))]
+
+stmt = "SELECT distinct(position) FROM At_variants WHERE chromosome='%s' AND length=0 AND allele IN (%s)" % (CHR, "'" + "', '".join(strains[3:len(strains)]) + "'")
+cur.execute(stmt)
+positions = [ int(x[0]) for x in list(cur.fetchall()) ]
+
+for temp in positions:
+
+  if check % 10000 == 0: # This indicates progress in the terminal and could be removed now that it works
+    if check > 0: sys.stdout.write('\033[F' + '\033[K')
+    print CHR + ': ' + str(check) 
+
+  stmt = "SELECT * from At_variants where chromosome='%s' and position=%s and allele in (%s)" % (CHR, temp, "'" + "', '".join(strains[3:len(strains)]) + "'")
+  cur.execute(stmt)
+  poly = [x for x in cur.fetchall()]
+  col0 = ''
+  result[strains.index('chromosome')].append(CHR)
+  result[strains.index('position')].append(temp)
+  for row in poly:
+    if int(row[4]) == 0:
+      col0 = row[5]
+      result[strains.index('Col-0')].append(col0)
+      break
+  res_acc = [x[1] for x in poly]
+
+  for acc in strains[3:len(strains)]: # Change alleles that are indels to N
+    if acc in res_acc: 
+      if len(poly[res_acc.index(acc)][6]) == 1 and poly[res_acc.index(acc)][6] != '-':
+        result[strains.index(acc)].append(poly[res_acc.index(acc)][6])
+      else:
+        result[strains.index(acc)].append('N')
+    else: # if not then assign the Col-0 allele
+      result[strains.index(acc)].append(col0)
+  
+  check = check + 1
+  
+  if check > 0 and check % 1000 == 0 or len(positions) < 1000: # write to file every 1000 sites 
+    with open(outfile, 'ab') as out:    
+      for x in range(len(result[0])):
+        out.write('\t'.join([str(y[x]) for y in result]) + '\n')
+    result = [[] for x in range(len(strains))]
