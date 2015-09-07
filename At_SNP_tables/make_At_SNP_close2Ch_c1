@@ -1,15 +1,15 @@
 #!/usr/bin/python
 
-''' This will produce a re-organized variant table for all the accessions in the atclose2chlist.txt file.close
-    Rather then the one polymophic position per accession per line of the At_variants table the result of this 
+''' This will produce a re-organized variant table for all the accessions in the atclose2chlist.txt file.
+    Rather then the one polymorphic position per accession per line of the At_variants table the result of this 
     script will be a table with one line per polymorphic site with the alleles for all accessions in columns.
-    These tables are stored in text files for further processinggingen. 
-    The nature of the variant tables is such that only sites variable between the reference and the accessions
-    in question are included. If some site is polymorphic for a certain accession but not for another then This
+    These tables are stored in text files for further processinggingens. 
+    The nature of the variant tables is such that only sites variable between the reference and the accession
+    in question are included. If some site is polymorphic for a certain accession but not for another then this
     script assumes the 'another' accession has the reference allele at that position. There is some risk invol-
     ved because it can also be that there is a deletion or simply no sequencing coverage for the accession in
     question. Keep this in mind when interpreting perculiar results down the line.
-    Note that the script below will produce a table for a single chromosome that can be chosen where indicated. 
+    Note that the script below will produce a table for a single chromosome that can be chosen on line 51. 
     '''
 
 import MySQLdb
@@ -30,7 +30,7 @@ db = MySQLdb.connect(host="mysql2.mpipz.mpg.de", user="pieper", passwd=ext.sentr
 cur = db.cursor()
 
 # Verify that each accession is present in the database
-# This takes a minute or so.
+# This takes a minute or so for ~50 accessions.
 not_in_db = []
 for strain in strains[3:len(strains)]:
   cur.execute("select * from At_variants where allele='%s' limit 10" % (strain))
