@@ -83,10 +83,10 @@ for temp in positions:
   res_acc = [x[1] for x in poly]
 
   for acc in strains[3:len(strains)]:
-    if acc in res_acc: # Change alleles that are indels to N 
+    if acc in res_acc: 
       if len(poly[res_acc.index(acc)][6]) == 1 and poly[res_acc.index(acc)][6] != '-':
         result[strains.index(acc)].append(poly[res_acc.index(acc)][6])
-      else:
+      else:  # Change alleles that are indels to N
         result[strains.index(acc)].append('N')
     else: # if not then assign the Col-0 allele
       result[strains.index(acc)].append(col0)
