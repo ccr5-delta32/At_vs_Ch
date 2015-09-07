@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ''' This will produce a FASTA alignment of all polymorphic sites that were put in the SNP tables
-    by the make_At_SNP_close2Ch_c<n> script '''
+    by the make_At_SNP_close2Ch_c<n> script. '''
 
 for CHR in range(1,6):
 
