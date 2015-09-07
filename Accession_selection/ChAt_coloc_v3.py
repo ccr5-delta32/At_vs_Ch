@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-""" Bjorn Pieper, MPIPZ Cologne, April 2015.
+""" April 2015.
     This script will find Arabidopisis accessions that were sampled spatially most closely to the 
     provided Cardamine accessions. To prevent the same Arabidopsis accession to be selected more
     than once it is deleted from the set after being selected. """
