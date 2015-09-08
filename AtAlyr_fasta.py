@@ -22,10 +22,6 @@ for CHR in range(1,6):
   current = [[] for x in strains]
   positions = []
 
-  print header
-  print strains
-  print current
-
   for x in range(1,len(data)):
     
     test = ''.join(data[x][2:len(data[0])])
