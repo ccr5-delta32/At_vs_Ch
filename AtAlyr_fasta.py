@@ -21,10 +21,6 @@ for CHR in range(1,6):
   current = [[] for x in strains]
   positions = []
 
-  print header
-  print strains
-  print current
-
   for x in range(1,len(data)):
     
     test = ''.join(data[x][2:len(data[0])])
@@ -33,14 +29,14 @@ for CHR in range(1,6):
       for y in range(2,len(data[0])):
         current[strains.index(strains[y-2])].append(data[x][header.index(strains[y-2])])
 
-    stmt = "select * from genmat_AtAlyr where chromosome='Chr" + str(CHR) + "' and position=" + str(data[x][1])
-    cur.execute(stmt)
-    result = cur.fetchall()
+      stmt = "select * from genmat_AtAlyr where chromosome='Chr" + str(CHR) + "' and position=" + str(data[x][1])
+      cur.execute(stmt)
+      result = cur.fetchall()
 
-    if len(result) == 0 or result[0][4] not in ['A', 'G', 'C', 'T']:
-      current[len(current)-1].append('N')
-    else:
-      current[len(current)-1].append(result[0][4])
+      if len(result) == 0 or result[0][4] not in ['A', 'G', 'C', 'T']:
+        current[len(current)-1].append('N')
+      else:
+        current[len(current)-1].append(result[0][4])
 
   with open('positions_At_C' + str(CHR) + '_fasta', 'wb') as output:
     for x in positions:
