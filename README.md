@@ -4,7 +4,7 @@ If you are reading this and you are not me then hear this:
 
 These scripts should be useless to you other than to get some ideas of how to do or not to do some things.
 
-Note .self about how to use this:
+Note to .self about how to use this:
 
 'Accession_selection' contains the method for selecting arabidopsis accessions from the final set of the 1001 genomes project. 
 1.) create the MySQL table using 'create_At_Variants.py'. 
