@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+import re
+
+path = '/biodata/dep_tsiantis/common/Bjorn/At_vs_Ch/At_fasta/'
+
+with open(path + 'At_C1_fasta.fa', 'r') as C:
+  acc = [ x.strip('\n') for x in C if re.search('>', x) ]
+with open(path + 'At_C1_fasta.fa', 'r') as C:
+  c1 = [ x.strip('\n')  for x in C if not re.search('>', x) ]
+with open(path + 'At_C2_fasta.fa', 'r') as C:
+  c2 = [ x.strip('\n')  for x in C if not re.search('>', x) ]
+with open(path + 'At_C3_fasta.fa', 'r') as C:
+  c3 = [ x.strip('\n')  for x in C if not re.search('>', x) ]
+with open(path + 'At_C4_fasta.fa', 'r') as C:
+  c4 = [ x.strip('\n')  for x in C if not re.search('>', x) ]
+with open(path + 'At_C5_fasta.fa', 'r') as C:
+  c5 = [ x.strip('\n')  for x in C if not re.search('>', x) ]
+
+with open('At_close2_Ch_SNP_fasta_WG.fa' ,'wb') as output:
+  for x in range(len(acc)):
+    output.write(acc[x] + '\n')
+    output.write(c1[x] + c2[x] + c3[x] + c4[x] + c5[x] + '\n')
+
+

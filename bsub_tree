@@ -1,0 +1,1 @@
+bsub -q multicore20 -n 20 -R "span[hosts=1]rusage[mem=40960]" 'OMP_NUM_THREADS=20 FastTreeMP -nt -gtr -gamma /biodata/dep_tsiantis/common/Bjorn/At_vs_Ch/At_close2_Ch_SNP_fasta_WG.fa > AtAlyr_glb_WG_tree.nwk'

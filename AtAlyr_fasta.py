@@ -1,7 +1,8 @@
 #!/usr/bin/python
 
-''' This will produce a FASTA alignment for A. lyrata at all polymorphic sites of A. thaliana 
-    that were put in the SNP tables by the make_At_SNP_close2Ch_c<n> script '''
+''' This will produce a FASTA alignment for all polymorphic sites of A. thaliana 
+    that were put in the SNP tables by the make_At_SNP_close2Ch_c<n> script and it also
+    produces a fasta with the the A.lyrata alleles at those loci'''
 
 import MySQLdb
 import ext
